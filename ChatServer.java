@@ -1,4 +1,3 @@
-//Import libraries
 import java.io.*;
 import java.net.*;
 
@@ -7,28 +6,33 @@ public class ChatServer{
 
     ServerSocket server;
     int port = 4444;
-    Socket socket;
     String sentence;
-    ObjectInputStream input;
-    ObjectOutputStream output;
+    String upperSentence;
 
+    //Attmpt to find port and connect with clients
     try{
         server = new ServerSocket(port);
-        while(true){
-          try{
-            socket = server.accept();
-            output = new ObjectOutputStream(socket.getOutputStream());
-            output.flush();
-            input = new ObjectInputStream(socket.getInputStream());
+        System.out.println("Waiting for connection...");
+        Socket socket = server.accept();
+        System.out.println("\nConnected To Client");
+        BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
 
-          //message();
+        while(true){
+            try {
+              
+            //Read sentence from client
+            sentence = input.readLine();
+            System.out.println("\nReading Input...");
+            System.out.println("Sending Reply...");
+
+            //Return uppercased sentence
+            upperSentence = sentence.toUpperCase() + "\n";
+            output.println(upperSentence);
+            output.flush();
 
           } catch(EOFException eo) {
           System.out.println("Connection with server ended");
-          } finally{
-            //output.close();
-            //input.close();
-            //socket.close();
           }
         }
 
@@ -37,9 +41,4 @@ public class ChatServer{
         System.exit(1);
     }
   }
-
-  private static void message(){
-
-  }
-
 }
