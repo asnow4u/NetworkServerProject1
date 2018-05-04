@@ -8,15 +8,27 @@
 
 using namespace std;
 
-int main(){
+int main(int argc, char *argv[]){ //Hostname, port number
+
+  //Client class vars
   char message[500];
-  int port = 4444;
+  string hostname;
+  int port;
   int client;
   int sresult;
   int fromServer;
   string sentence;
 
+  //Check for arguments
+  if (argc != 3){
+    cout << "Arguments Needed: Hostname, Port Number";
+    cout << argc;
+    exit(1);
+  }
+
   //Initialize socket
+  hostname = argv[1];
+  port = atoi(argv[2]);
   int network_socket = socket(AF_INET, SOCK_STREAM, 0);
 
   struct sockaddr_in server_address;
@@ -27,28 +39,34 @@ int main(){
   int connection = connect(network_socket, (struct sockaddr *) &server_address, sizeof(server_address));
 
   if (connection == -1){
-    cout << "error during connection\n" << endl;
+    cout << "error during connection" << endl;
   } else {
-    cout << "Connected";
+    cout << "\nConnected\n";
 
     //Get user input and send to server
     do{
-      cout << "\n\nPlease Enter A Sentence: ";
-      //sentence = "";
+      //User input
+      cout << hostname + "> ";
       getline(cin, sentence);
 
+      //Check for quit command
+      if (sentence == "quit"){ //"\q" is an illegal escape character and cannot be used
+        return 0;
+      } else {
+        sentence = hostname + "> " + sentence;
+      }
+
+      //Send to server
       if (sentence.size() > 0){
         send(network_socket, sentence.c_str(), sentence.size(), 0);
         send(network_socket, "\n", 1, 0);
-        cout << "\nSending To Server...\n\n";
 
-        //Display sentece recieved from server
+        //Display sentence recieved from server
         fromServer = recv(network_socket, &message, sizeof(message), 0);
         if (fromServer > 0){
-          cout << "Recieved Back From Server: " << string(message, 0, fromServer) << endl;
+          cout << "Server> " << string(message, 0, fromServer);
         }
       }
-
     } while(sentence.size() > 0);
 
   }
