@@ -1,5 +1,5 @@
 Andrew Snow
-Networking
+
 
 Welcome to a simple chat system between two different terminals. You will need
 to compile the server code and client code using the following commands in a
